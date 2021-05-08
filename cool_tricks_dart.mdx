@@ -1,0 +1,191 @@
+## Built-in types
+
+### double
+
+```dart
+double z = 1; // Equivalent to double z = 1.0
+```
+
+### Objects
+
+#### Conditional property access
+
+Essentially, like optional-chaining in JavaScript.
+
+```dart
+ // logically equivalent to (myObject != null) ? myObject.someProperty : null
+myObject?.someProperty;
+myObject?.someProperty?.someMethod();
+```
+
+#### Cascades
+
+Whenever we perform operations on an object, by using `..` instead of `.` to an object,
+we return a reference to the object instead of the operation.
+
+```dart
+myObject
+  ..someMethod()
+  ..someProperty = someValue
+  ..onClick.listen((e) => window.alert('Cascades are so cool!'));
+```
+
+## Operators
+
+### Null-aware assignment
+
+```dart
+String bar; // Unassigned objects are null by default
+
+... // Bar possibly gets assigned a value
+
+bar ??= "my string"; // Bar is assigned "my string" only if it was previous null
+```
+
+## Functions
+
+### Optional positional parameters
+
+```dart
+void registerFamilyOnUser(Person user, [Person father, Person mother, Person[] children, Person[] siblings]) {
+    if (father != null) user.registerFather(father);
+    if (mother != null) user.registerMother(mother);
+    if (children != null && children.length > 0)  user.registerChildren(children);
+    if (siblings != null && siblings.length > 0) user.registerSiblings(siblings);
+}
+```
+
+### Optional named parameters
+
+```dart
+void printSentence(List<String> words, {String seperator = " "}) {
+  print(words.join(seperator));
+}
+```
+
+## Exceptions
+
+Although the Exception and Error types are provided, we can throw any non-null object.
+
+```dart
+try {
+  throw 'A string?!'
+} on Exception catch(e) {
+  print('This does not get printed');
+} catch (e) {
+  print('This gets printed')
+}
+```
+
+## Classes
+
+### Constructors
+
+A handy shortcut for constructors.
+
+```dart
+class Animal {
+  string name;
+
+  Animal(this.name);
+}
+
+final animal = Animal("Llama");
+```
+
+#### Named Constructors
+
+Classes can have multiple constructors via _named constructors_.
+
+```dart
+class Drink {
+  Drink(this.flavour);
+
+  Drink.water() {
+    flavour = null;
+  }
+}
+
+final myPoint = Drink.water();
+```
+
+#### Initializer lists
+
+To perform setup before constructor body executes.
+
+```dart
+MyClass.fromJson(Map<String, num> json)
+    : x = json['x'],
+      y = json['y'] {
+  print('I have access to $x and $y!');
+}
+
+// Initializer lists are great places to perform assertions
+NonNegativeTuple(this.x, this.y)
+    : assert(x >= 0)
+      assert(y >= 0) {
+  print('$x and $y are guaranteed to be non-negative!');
+}
+```
+
+#### Factory Constructors
+
+Classes can have factory constructors which return subtypes or even null.
+
+```dart
+class Square extends Shape {}
+
+class Circle extends Shape {}
+
+class Shape {
+  Shape();
+
+  factory Shape.fromTypeName(String typeName) {
+    if (typeName == 'square') return Square();
+    if (typeName == 'circle') return Circle();
+
+    print('$typeName is not a valid type, returning null...');
+    return null;
+  }
+}
+```
+
+#### Redirecting Constructors
+
+Constructors can delegate to another constructor in the same class.
+
+```dart
+class Guitar {
+  String type;
+  String brand;
+  String model;
+
+  Guitar(this.type, this.brand, this.model);
+
+  // Delegate to main constructor
+  Guitar.acoustic(String brand, String model) : this('Acoustic', brand, model);
+
+  // Delegate to a named constructor
+  Guitar.myGuitar() : this.acoustic('Taylor', '814ce');
+}
+```
+
+#### Const Constructors
+
+Constructors can produce immutable (`final` <=> compile-time constant) objects.
+
+```dart
+class ImmutablePoint {
+  const ImmutablePoint(this.x, this.y);
+
+  // Note that the class properties must be final
+  final int x;
+  final int y;
+
+  static const ImmutablePoint origin = ImmutablePoint(0, 0);
+}
+```
+
+# References
+
+- [Dart Cheatsheet](https://dart.dev/codelabs/dart-cheatsheet)
